@@ -1,12 +1,23 @@
 const express = require('express')
-
 const app = express()
 const server = require('http').createServer(app)
 const port = process.env.PORT || 3000
+const io = require('socket.io')(server)
+const path = require('path')
 
-// just to test the server
-app.get('/', (req, res) => {
+app.use(express.static(path.join(__dirname + '/public')))
+
+app.get('/test', (req, res) => {
   res.status(200).send('Working')
+})
+
+io.on('connection', socket => {
+  //console.log('Some client connected')
+
+    socket.on('chat', message => {
+       //console.log('From client: ', message)
+	io.emit('chat',message)
+  })
 })
 
 server.listen(port, () => {
